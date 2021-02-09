@@ -2,7 +2,7 @@
 
 A helpful script to pick the best suited predefined themes for `wal` (https://github.com/dylanaraps/pywal) based on the colors in the image.
 
-`wal` (pywal) is a great tool to generate a color palette from the dominant colors in an image and then apply it system-wide. However, sometimes it generates a palette that is too plane or bland, especially for monochromatic images. Such a color scheme is often less useful for syntax-highlighting compared to hand-picked built-in `pywal` themes. This is the main motivation for the `wal-theme-picker`.
+`wal` (pywal) is a great tool to generate a color palette from the dominant colors in an image and then apply it system-wide. However, sometimes it generates a palette that is too plane or bland, especially for monochromatic images. Such a color scheme is often less useful for syntax-highlighting compared to hand-picked built-in pywal themes. This is the main motivation for the `wal-theme-picker`.
 
 Under the hood `wal-theme-picker` uses k-means clustering to extract the dominant colors in the image, then compares them with themes in `wal`, assigns each theme a rating based on a semi-empirical color-distance formula, and outputs the best-scoring themes.
 
