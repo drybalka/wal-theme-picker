@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from math import sqrt
+import numpy as np
 
 
 def rgb_dist(rgb1, rgb2):

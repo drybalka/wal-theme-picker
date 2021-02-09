@@ -4,9 +4,9 @@ import numpy as np
 def wkmean(k, data, weights=None, metric='Euclidian',
            MAX_ITERATIONS=1000, method='k++'):
     """
-    Weighted k-means algorithm with population count (importance
+    Weighted k-means algorithm with relative weighted population count
     for each cluster. Returns the best centroids in the form
-    positions, importances and fit errror.
+    positions, relative weighted populations and fit errror.
     If no weights are provided all data points are assumed to be equal.
     If no metric is provided, the standard Euclidian metric is used.
     Possible methods are:
@@ -82,14 +82,14 @@ def wkmean(k, data, weights=None, metric='Euclidian',
         closest_centroid = distances.argmin(axis=0)
         return closest_centroid
 
-    # New centroid positions, their importance and error
+    # New centroid positions, their relative weighted population and error
     def update_centroids(data, weights, labels):
         neighborhood = np.array([labels == jj for jj in range(k)])
         neighborhood = neighborhood * weights
         # Sets unnormalized cumulative centroid
         centroids = neighborhood.dot(data)
 
-        importances = np.array([0 for _ in range(k)]).astype(float)
+        populations = np.array([0 for _ in range(k)]).astype(float)
         error = 0
         for jj in range(k):
             s = sum(neighborhood[jj])
@@ -98,11 +98,16 @@ def wkmean(k, data, weights=None, metric='Euclidian',
                 diff = data - centroids[jj]
                 distances = metric(diff)
                 error += distances.dot(neighborhood[jj])
-                importances[jj] = s
-        return np.array(centroids), importances, error
+                populations[jj] = s
+        return np.array(centroids), populations, error
 
+    # Make the initial preparations
+    data = np.array(data)
     if weights is None:
         weights = np.array([1 for _ in data])
+    else:
+        weights = np.array(weights)
+        weights = weights / sum(weights)
     if metric == 'Euclidian':
         metric = euclidian_metric
     if method == 'uniform':
@@ -119,7 +124,7 @@ def wkmean(k, data, weights=None, metric='Euclidian',
 
     # Initialize clusters
     centroids = initialize_centroids(data, k)
-    importances = [0 for _ in range(k)]
+    populations = [0 for _ in range(k)]
     error = 10**15
 
     # Initialize book keeping vars
@@ -135,7 +140,7 @@ def wkmean(k, data, weights=None, metric='Euclidian',
         labels = assign_centroids(data, centroids)
 
         # Update centroid positions
-        centroids, importances, error = update_centroids(data,
+        centroids, populations, error = update_centroids(data,
                                                          weights, labels)
 
-    return centroids, importances, error
+    return np.array(centroids), np.array(populations), error
