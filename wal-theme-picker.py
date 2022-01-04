@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 from argparse import ArgumentParser
 from PIL import Image
@@ -6,10 +6,12 @@ import os
 import subprocess
 import json
 import numpy as np
+from collections import Counter
 from kmean import wkmean
 from colordiff import rgb, rgb_dist
 
 MAX_FIT_ITERATIONS = 100
+MAX_BINS = 1000
 
 
 # Function that returns the importance of each color in 'colors'
@@ -23,9 +25,10 @@ def calculate_importances(populations, colors):
 # Loads an image and extracts colors and their frequencies from an image
 def get_image_colors(args):
     with Image.open(args.image_path).convert('RGB') as im:
-        tally = im.getcolors()
-    counts = [el[0] for el in tally]
-    colors = [el[1] for el in tally]
+        tally = Counter(im.getdata())
+
+    counts = list(tally.values())
+    colors = list(tally.keys())
 
     return np.array(counts), np.array(colors)
 
@@ -200,12 +203,29 @@ def install_theme(names, scores):
             print("Not a valid command")
 
 
+def colors_to_bins(counts, colors, bin_size):
+    tally = dict()
+    for ii in range(len(colors)):
+        color = colors[ii]
+        count = counts[ii]
+        bin = tuple((color // bin_size) * bin_size + (bin_size // 2))
+        tally[bin] = tally.get(bin, 0) + count
+
+    new_colors = list(tally.keys())
+    new_counts = list(tally.values())
+    return np.array(new_counts), np.array(new_colors)
+
+
 if __name__ == '__main__':
     args = parse_args()
     num_clusters = args.c
     num_results = args.n
 
     counts, colors = get_image_colors(args)
+    bin_size = 1
+    while len(counts) > MAX_BINS:
+        bin_size *= 2
+        counts, colors = colors_to_bins(counts, colors, bin_size)
     palette, importances = compute_image_palette(colors, counts, args.c,
                                                  method='k++_pdf')
     themes, scores, names = pick_best_themes(palette, importances, num_results)
