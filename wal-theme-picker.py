@@ -51,7 +51,7 @@ def compute_image_palette(colors, counts, palette_size, method='k++_pdf'):
 
     importances = calculate_importances(best_populations, best_palette)
 
-    # Sort colors in the order of imortance
+    # Sort colors in the order of importance
     inds = importances.argsort()
     palette = np.array(best_palette)[inds[::-1]]
     importances = np.array(importances)[inds[::-1]]

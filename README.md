@@ -9,10 +9,11 @@ Under the hood `wal-theme-picker` uses k-means clustering to extract the dominan
 Note, that the notion of "the best" theme is very subjective and relies heavily on the personal taste. Therefore, `wal-theme-picker` also proposes an interactive menu to try out the best-scoring themes with an option to revert the changes. There is also a possibility to print out the dominant colors and the palette for visual comparison.
 
 ### Dependencies
-The only dependency is the installed `wal`.
+You will probably need python packages `numpy` and `PIL` (or `pillow`).
+The only other dependency is the installed `wal`.
 
 ### Usage
-```sh
+```
 usage: wal-theme-picker [-h] [-n N] [-c C] [-p] [-i] image_path
 
 Tries to pick the best color palette for a given image from a set of hand-picked
